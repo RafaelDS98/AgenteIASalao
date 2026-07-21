@@ -28,6 +28,11 @@ CREATE TABLE IF NOT EXISTS historico (
   criado_em TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS config (
+  chave VARCHAR(50) PRIMARY KEY,
+  valor TEXT
+);
+
 INSERT INTO servicos (nome) VALUES
   ('Cílios'),
   ('Manicure simples'),

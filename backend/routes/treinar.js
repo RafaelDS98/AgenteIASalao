@@ -3,7 +3,10 @@ const router = express.Router();
 const pool = require('../db');
 const Anthropic = require('@anthropic-ai/sdk');
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+async function getApiKey() {
+  const { rows } = await pool.query("SELECT valor FROM config WHERE chave = 'anthropic_api_key'");
+  return rows[0]?.valor || process.env.ANTHROPIC_API_KEY;
+}
 
 const SCHEMA_HINT = `Responda APENAS com JSON válido (sem markdown, sem backticks):
 {
@@ -40,6 +43,10 @@ router.post('/', async (req, res) => {
 Analise a conversa de WhatsApp onde a cliente FECHOU o serviço de "${servico.nome}" e extraia um script de atendimento.${contexto}
 
 ${SCHEMA_HINT}`;
+
+  const apiKey = await getApiKey();
+  if (!apiKey) return res.status(400).json({ error: 'Nenhuma chave da Anthropic configurada. Vá em Serviços e cadastre a chave.' });
+  const anthropic = new Anthropic({ apiKey });
 
   let parsed;
   try {

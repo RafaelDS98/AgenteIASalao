@@ -243,6 +243,17 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
     <div class="section-label">Serviços cadastrados</div>
     <div id="servicos-list"></div>
   </div>
+
+  <div class="card">
+    <div class="section-label">🔑 Chave da API Anthropic</div>
+    <div id="apikey-status" style="font-size:12.5px;color:#9B7080;margin-bottom:10px"></div>
+    <div style="display:flex;gap:8px">
+      <input type="text" id="apikey-input" placeholder="sk-ant-..."/>
+      <button class="btn btn-primary btn-sm" onclick="saveApiKey()" style="white-space:nowrap">Salvar</button>
+    </div>
+    <div id="apikey-error" class="error-box" style="display:none;margin-top:8px"></div>
+    <div id="apikey-success" class="success-box" style="display:none;margin-top:8px"></div>
+  </div>
 </div>
 
 <!-- toast -->
@@ -547,6 +558,7 @@ async function loadHistoricoItem(idx){
 // ══════════════════════════════════════════════════
 async function renderServicos(){
   await refreshServicos();
+  renderApiKeyStatus();
   const list=document.getElementById('servicos-list');
   if(servicos.length===0){
     list.innerHTML=`<div class="empty"><div class="empty-icon">📋</div>Nenhum serviço cadastrado.</div>`;
@@ -584,6 +596,36 @@ async function removeServico(id){
   if(!confirm(`Remover "${s?.nome}"? O script treinado para este serviço também será apagado.`)) return;
   await apiDelete('/api/servicos/'+id);
   await renderServicos();
+}
+
+// ══════════════════════════════════════════════════
+// API KEY (Anthropic)
+// ══════════════════════════════════════════════════
+async function renderApiKeyStatus(){
+  const status = await apiGet('/api/config/anthropic-key');
+  const box = document.getElementById('apikey-status');
+  box.innerHTML = status.configurada
+    ? `<span class="tag tag-green">configurada</span> ${esc(status.mascarada)}`
+    : `<span class="tag" style="background:#f5f5f5;color:#9B7080;border:1px solid #e0e0e0">não configurada</span>`;
+}
+
+async function saveApiKey(){
+  const input=document.getElementById('apikey-input');
+  const apiKey=input.value.trim();
+  const errBox=document.getElementById('apikey-error');
+  const okBox=document.getElementById('apikey-success');
+  errBox.style.display='none';
+  okBox.style.display='none';
+  if(!apiKey){ errBox.textContent='⚠️ Cole a chave.'; errBox.style.display='block'; return; }
+  try{
+    await apiPost('/api/config/anthropic-key', { apiKey });
+    input.value='';
+    okBox.textContent='✅ Chave atualizada!';
+    okBox.style.display='block';
+    await renderApiKeyStatus();
+  }catch(e){
+    errBox.textContent='⚠️ '+(e.message||'Erro ao salvar a chave.'); errBox.style.display='block';
+  }
 }
 
 // ══════════════════════════════════════════════════

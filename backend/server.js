@@ -7,6 +7,7 @@ const servicosRouter = require('./routes/servicos');
 const scriptsRouter = require('./routes/scripts');
 const treinarRouter = require('./routes/treinar');
 const historicoRouter = require('./routes/historico');
+const configRouter = require('./routes/config');
 
 const app = express();
 app.use(cors());
@@ -16,6 +17,7 @@ app.use('/api/servicos', servicosRouter);
 app.use('/api/scripts', scriptsRouter);
 app.use('/api/treinar', treinarRouter);
 app.use('/api/historico', historicoRouter);
+app.use('/api/config', configRouter);
 
 app.use(express.static(path.join(__dirname, '..', 'frontend')));
 app.get('*', (req, res) => {
