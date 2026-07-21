@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dona Menina – Agente de Atendimento</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#FDF6F8;color:#2D1B22;min-height:100vh}
+
+/* ── header ── */
+.header{background:linear-gradient(135deg,#2D1B22 0%,#4A2535 100%);padding:22px 24px 16px;text-align:center}
+.header .icon{font-size:28px;margin-bottom:4px}
+.header h1{font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.01em}
+.header .sub{font-size:11px;color:#E8A0B0;font-weight:600;letter-spacing:.12em;text-transform:uppercase;margin-top:2px}
+
+/* ── nav ── */
+.nav{display:flex;background:#fff;border-bottom:2px solid rgba(232,160,176,.2)}
+.nav-btn{flex:1;padding:12px 8px;font-size:12px;font-weight:500;color:#9B7080;background:transparent;border:none;border-bottom:2.5px solid transparent;cursor:pointer;white-space:nowrap;transition:color .15s;font-family:inherit}
+.nav-btn.active{color:#C8748A;font-weight:700;border-bottom-color:#C8748A}
+
+/* ── layout ── */
+.page{display:none;padding:18px 16px;max-width:600px;margin:0 auto}
+.page.active{display:block}
+
+/* ── cards ── */
+.card{background:#FFF0F4;border-radius:16px;border:1.5px solid rgba(232,160,176,.2);padding:18px 20px;margin-bottom:14px}
+.card-white{background:#fff;border-radius:14px;border:1.5px solid rgba(232,160,176,.25);padding:16px 18px;margin-bottom:12px}
+
+/* ── titles ── */
+.page-title{font-weight:800;font-size:17px;margin-bottom:4px;color:#2D1B22}
+.page-sub{font-size:12.5px;color:#9B7080;line-height:1.5;margin-bottom:16px}
+.section-label{font-size:11px;font-weight:700;color:#C8748A;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+
+/* ── tags ── */
+.tag{display:inline-block;border-radius:999px;font-size:11px;font-weight:700;padding:2px 10px;letter-spacing:.04em;text-transform:uppercase}
+.tag-pink{background:rgba(200,116,138,.13);color:#C8748A;border:1px solid rgba(200,116,138,.27)}
+.tag-green{background:rgba(76,175,80,.13);color:#3d9142;border:1px solid rgba(76,175,80,.27)}
+.tag-blue{background:rgba(33,150,243,.1);color:#1976D2;border:1px solid rgba(33,150,243,.25)}
+
+/* ── service pills ── */
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.pill{padding:7px 14px;border-radius:999px;font-size:12.5px;font-weight:600;cursor:pointer;border:1.5px solid rgba(200,116,138,.35);background:#fff;color:#9B7080;transition:all .15s;font-family:inherit}
+.pill:hover{border-color:#C8748A;color:#C8748A}
+.pill.selected{background:#C8748A;color:#fff;border-color:#C8748A}
+.pill.add-pill{border-style:dashed;color:#C8748A;border-color:#C8748A}
+.pill.add-pill:hover{background:#FFF0F4}
+
+/* ── inputs ── */
+input[type=text],textarea,select{width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid rgba(232,160,176,.4);font-size:13px;font-family:inherit;color:#2D1B22;background:#fff;outline:none;line-height:1.5;transition:border-color .15s}
+input[type=text]:focus,textarea:focus,select:focus{border-color:#C8748A}
+textarea{min-height:180px;resize:vertical}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239B7080' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+
+/* ── buttons ── */
+.btn{border-radius:11px;padding:11px 20px;font-weight:700;font-size:13.5px;cursor:pointer;font-family:inherit;transition:opacity .18s;border:none}
+.btn:hover:not(:disabled){opacity:.87}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-primary{background:#C8748A;color:#fff}
+.btn-secondary{background:transparent;color:#C8748A;border:1.5px solid #C8748A}
+.btn-danger{background:transparent;color:#c0404a;border:1.5px solid #c0404a;font-size:12px;padding:7px 14px}
+.btn-sm{padding:7px 14px;font-size:12px}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+
+/* ── upload ── */
+.upload-zone{border:2px dashed #E8A0B0;border-radius:12px;padding:16px;text-align:center;cursor:pointer;background:#fff;transition:background .15s;margin-bottom:10px}
+.upload-zone:hover{background:#FFF0F4}
+
+/* ── messages ── */
+.error-box{background:#FFE5EA;border:1px solid #F5B8C0;border-radius:10px;padding:10px 14px;font-size:13px;color:#C0404A;margin-top:10px}
+.success-box{background:#E8F5E9;border:1px solid #A5D6A7;border-radius:10px;padding:10px 14px;font-size:13px;color:#2e7d32;margin-top:10px}
+.loading-box{background:rgba(200,116,138,.08);border-radius:12px;padding:14px;font-size:13px;color:#C8748A;text-align:center;font-weight:600;margin-top:12px}
+
+/* ── script display ── */
+.script-block{margin-bottom:18px}
+.script-block-title{font-weight:700;font-size:12px;color:#C8748A;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.script-item{background:#fff;border-left:3px solid #E8A0B0;border-radius:0 10px 10px 0;padding:9px 13px;font-size:13px;color:#2D1B22;line-height:1.6;margin-bottom:7px}
+.frase-item{background:#FFF0F4;border:1.5px solid #E8A0B0;border-radius:10px;padding:9px 13px;font-size:13px;color:#2D1B22;font-style:italic;line-height:1.5;margin-bottom:7px;cursor:pointer;transition:background .15s;position:relative}
+.frase-item:hover{background:#ffe4ec}
+.frase-item::after{content:'📋';position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:12px;opacity:0}
+.frase-item:hover::after{opacity:1}
+.copied-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#2D1B22;color:#fff;padding:10px 20px;border-radius:999px;font-size:13px;font-weight:600;z-index:999;opacity:0;transition:opacity .25s;pointer-events:none}
+.copied-toast.show{opacity:1}
+
+/* ── history ── */
+.history-item{background:#fff;border-radius:12px;border:1.5px solid rgba(232,160,176,.2);padding:13px 16px;margin-bottom:10px;cursor:pointer;transition:border-color .15s}
+.history-item:hover{border-color:#C8748A}
+.history-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:6px}
+.history-date{font-size:11px;color:#9B7080}
+.history-preview{font-size:12.5px;color:#2D1B22;line-height:1.5}
+.history-cta{font-size:11.5px;color:#C8748A;font-weight:600;margin-top:6px}
+
+/* ── empty ── */
+.empty{text-align:center;padding:32px 0;color:#9B7080;font-size:13px}
+.empty-icon{font-size:36px;margin-bottom:10px}
+
+/* ── divider ── */
+.divider{border:none;border-top:1.5px solid rgba(232,160,176,.2);margin:16px 0}
+
+/* ── service badge on script ── */
+.service-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(200,116,138,.1);border:1.5px solid rgba(200,116,138,.3);border-radius:999px;padding:4px 12px;font-size:12px;font-weight:700;color:#C8748A;margin-bottom:14px}
+
+/* ── stats ── */
+.stats-row{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.stat-box{flex:1;min-width:100px;background:#fff;border-radius:12px;border:1.5px solid rgba(232,160,176,.2);padding:12px 14px;text-align:center}
+.stat-num{font-size:22px;font-weight:800;color:#C8748A}
+.stat-label{font-size:11px;color:#9B7080;margin-top:2px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="icon">💅</div>
+  <h1>Dona Menina</h1>
+  <div class="sub">Agente de Atendimento</div>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="goTo('agente')">💬 Agente</button>
+  <button class="nav-btn" onclick="goTo('treinar')">🎓 Treinar</button>
+  <button class="nav-btn" onclick="goTo('historico')">📁 Histórico</button>
+  <button class="nav-btn" onclick="goTo('servicos')">⚙️ Serviços</button>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     PÁGINA: AGENTE
+════════════════════════════════════════════════ -->
+<div id="page-agente" class="page active">
+  <div class="page-title">💬 Consultar Script</div>
+  <div class="page-sub">Selecione o serviço que a cliente perguntou e veja o roteiro de atendimento.</div>
+
+  <div class="section-label">Serviço da cliente</div>
+  <div class="pills" id="agente-pills"></div>
+
+  <div id="agente-empty" class="card" style="text-align:center;padding:30px">
+    <div style="font-size:32px;margin-bottom:8px">🔍</div>
+    <div style="font-size:13px;color:#9B7080">Selecione um serviço acima para ver o script de atendimento.</div>
+  </div>
+
+  <div id="agente-loading" class="loading-box" style="display:none">💅 Carregando script...</div>
+  <div id="agente-no-data" style="display:none">
+    <div class="card" style="text-align:center;padding:28px">
+      <div style="font-size:32px;margin-bottom:8px">📭</div>
+      <div style="font-size:13px;color:#9B7080;line-height:1.6">Nenhuma conversa treinada para este serviço ainda.<br/>Vá em <strong>🎓 Treinar</strong> para adicionar conversas.</div>
+    </div>
+  </div>
+
+  <div id="agente-result" style="display:none">
+    <div id="agente-service-badge"></div>
+
+    <div class="card" id="agente-diagnostico"></div>
+
+    <div class="card" id="agente-pontos" style="display:none">
+      <div class="script-block-title">⭐ Pontos Fortes</div>
+      <div id="agente-pontos-list"></div>
+    </div>
+
+    <div class="card">
+      <div style="font-weight:700;font-size:14px;margin-bottom:14px">📝 Script de Atendimento</div>
+      <div id="agente-script"></div>
+    </div>
+
+    <div class="card" id="agente-frases-card" style="display:none">
+      <div style="font-weight:700;font-size:14px;margin-bottom:4px">💬 Frases que Convertem</div>
+      <div style="font-size:11.5px;color:#9B7080;margin-bottom:10px">Toque numa frase para copiar</div>
+      <div id="agente-frases"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     PÁGINA: TREINAR
+════════════════════════════════════════════════ -->
+<div id="page-treinar" class="page">
+  <div class="page-title">🎓 Treinar o Agente</div>
+  <div class="page-sub">Adicione conversas onde a cliente fechou. O agente aprende o padrão e melhora o script automaticamente.</div>
+
+  <div class="card">
+    <div class="section-label">1. Selecione o serviço</div>
+    <select id="treinar-servico">
+      <option value="">— escolha o serviço desta conversa —</option>
+    </select>
+
+    <hr class="divider"/>
+
+    <div class="section-label">2. Cole ou envie a conversa</div>
+    <div class="upload-zone" onclick="document.getElementById('treinar-file').click()">
+      <div style="font-size:22px;margin-bottom:4px">📂</div>
+      <div style="font-size:13px;color:#C8748A;font-weight:600">Clique para enviar .txt</div>
+      <div style="font-size:11px;color:#9B7080;margin-top:2px">Exportação do WhatsApp</div>
+    </div>
+    <input type="file" id="treinar-file" accept=".txt,.text" style="display:none" onchange="handleTreinarFile(event)"/>
+
+    <textarea id="treinar-texto" placeholder="Ou cole a conversa aqui..." oninput="onTreinarChange()"></textarea>
+    <div id="treinar-char" style="font-size:11px;color:#9B7080;text-align:right;margin-top:4px;display:none"></div>
+
+    <div id="treinar-error" class="error-box" style="display:none"></div>
+    <div id="treinar-success" class="success-box" style="display:none"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="treinar-btn" onclick="treinar()" disabled>🧠 Analisar e Treinar</button>
+      <button class="btn btn-secondary btn-sm" onclick="clearTreinar()">Limpar</button>
+    </div>
+
+    <div id="treinar-loading" class="loading-box" style="display:none">
+      💅 A IA está aprendendo com essa conversa...
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     PÁGINA: HISTÓRICO
+════════════════════════════════════════════════ -->
+<div id="page-historico" class="page">
+  <div class="page-title">📁 Histórico de Treinamentos</div>
+  <div class="page-sub">Todas as conversas analisadas, organizadas por serviço.</div>
+
+  <div class="stats-row" id="stats-row"></div>
+
+  <div class="section-label" style="margin-bottom:10px">Filtrar por serviço</div>
+  <div class="pills" id="historico-pills" style="margin-bottom:14px"></div>
+
+  <div id="historico-list"></div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     PÁGINA: SERVIÇOS
+════════════════════════════════════════════════ -->
+<div id="page-servicos" class="page">
+  <div class="page-title">⚙️ Gerenciar Serviços</div>
+  <div class="page-sub">Adicione ou remova os serviços que o agente conhece.</div>
+
+  <div class="card">
+    <div class="section-label">Adicionar novo serviço</div>
+    <div style="display:flex;gap:8px">
+      <input type="text" id="novo-servico" placeholder="Ex: Design de sobrancelha" onkeydown="if(event.key==='Enter')addServico()"/>
+      <button class="btn btn-primary btn-sm" onclick="addServico()" style="white-space:nowrap">+ Adicionar</button>
+    </div>
+    <div id="servico-error" class="error-box" style="display:none;margin-top:8px"></div>
+  </div>
+
+  <div class="card">
+    <div class="section-label">Serviços cadastrados</div>
+    <div id="servicos-list"></div>
+  </div>
+</div>
+
+<!-- toast -->
+<div class="copied-toast" id="toast">📋 Frase copiada!</div>
+
+<script>
+// ══════════════════════════════════════════════════
+// API
+// ══════════════════════════════════════════════════
+const API = '';
+
+async function apiGet(path){
+  const r = await fetch(API+path);
+  if(!r.ok) throw new Error('Erro na requisição');
+  return r.json();
+}
+async function apiPost(path, body){
+  const r = await fetch(API+path, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(body)
+  });
+  if(!r.ok){
+    const err = await r.json().catch(()=>({}));
+    throw new Error(err.error || 'Erro na requisição');
+  }
+  return r.json();
+}
+async function apiDelete(path){
+  const r = await fetch(API+path, { method:'DELETE' });
+  if(!r.ok) throw new Error('Erro na requisição');
+}
+
+let servicos = [];       // [{id, nome, criado_em}]
+let scriptCache = {};    // { servicoId: script }
+let history = [];        // lista completa do histórico
+let selectedAgente = null;
+let selectedHistorico = null;
+
+// ══════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════
+async function goTo(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>{
+    if(b.getAttribute('onclick')==="goTo('"+page+"')") b.classList.add('active');
+  });
+  if(page==='agente') await renderAgentePills();
+  if(page==='treinar') await renderTreinarSelect();
+  if(page==='historico') await renderHistorico();
+  if(page==='servicos') await renderServicos();
+}
+
+async function refreshServicos(){
+  servicos = await apiGet('/api/servicos');
+}
+
+// ══════════════════════════════════════════════════
+// AGENTE PAGE
+// ══════════════════════════════════════════════════
+async function renderAgentePills(){
+  await refreshServicos();
+  const box = document.getElementById('agente-pills');
+  box.innerHTML = servicos.map(s=>`
+    <button class="pill ${selectedAgente===s.id?'selected':''}" onclick="selectAgente(${s.id})">${esc(s.nome)}</button>
+  `).join('');
+}
+
+async function selectAgente(id){
+  selectedAgente = id;
+  renderAgentePillsSync();
+  document.getElementById('agente-empty').style.display='none';
+  document.getElementById('agente-no-data').style.display='none';
+  document.getElementById('agente-result').style.display='none';
+  document.getElementById('agente-loading').style.display='block';
+
+  try{
+    const script = await apiGet('/api/scripts/'+id);
+    document.getElementById('agente-loading').style.display='none';
+    if(!script){
+      document.getElementById('agente-no-data').style.display='block';
+      return;
+    }
+    renderAgenteResult(servicos.find(s=>s.id===id).nome, normalizeScript(script));
+  }catch(e){
+    document.getElementById('agente-loading').style.display='none';
+    document.getElementById('agente-no-data').style.display='block';
+  }
+}
+
+function renderAgentePillsSync(){
+  const box = document.getElementById('agente-pills');
+  box.innerHTML = servicos.map(s=>`
+    <button class="pill ${selectedAgente===s.id?'selected':''}" onclick="selectAgente(${s.id})">${esc(s.nome)}</button>
+  `).join('');
+}
+
+function normalizeScript(r){
+  return {
+    resumo: r.resumo,
+    tom_linguagem: r.tom_linguagem,
+    pontos_fortes: r.pontos_fortes || [],
+    abertura: r.abertura || [],
+    qualificacao: r.qualificacao || [],
+    apresentacao_servico: r.apresentacao_servico || [],
+    tratamento_objecoes: r.tratamento_objecoes || [],
+    fechamento: r.fechamento || [],
+    pix_pagamento: r.pix_pagamento || [],
+    frases_chave: r.frases_chave || []
+  };
+}
+
+function renderAgenteResult(nome, r){
+  document.getElementById('agente-service-badge').innerHTML=`<div class="service-badge">💅 ${esc(nome)}</div>`;
+
+  document.getElementById('agente-diagnostico').innerHTML=`
+    <div style="font-weight:700;font-size:14px;margin-bottom:8px">📊 Diagnóstico</div>
+    <div style="font-size:13px;line-height:1.6;color:#2D1B22">${esc(r.resumo||'')}</div>
+    ${r.tom_linguagem?`<div style="margin-top:10px;padding:8px 12px;background:rgba(200,116,138,.08);border-radius:8px;font-size:13px;color:#C8748A;font-weight:500">🗣️ <strong>Tom:</strong> ${esc(r.tom_linguagem)}</div>`:''}
+  `;
+
+  const pontosCard=document.getElementById('agente-pontos');
+  const pontosList=document.getElementById('agente-pontos-list');
+  if(r.pontos_fortes&&r.pontos_fortes.length>0){
+    pontosList.innerHTML=r.pontos_fortes.map(p=>`<div style="font-size:13px;color:#2D1B22;padding-left:13px;border-left:3px solid #4CAF50;line-height:1.5;margin-bottom:7px">${esc(p)}</div>`).join('');
+    pontosCard.style.display='block';
+  } else { pontosCard.style.display='none'; }
+
+  const sections=[
+    {key:'abertura',emoji:'👋',title:'Abertura'},
+    {key:'qualificacao',emoji:'🎯',title:'Qualificação'},
+    {key:'apresentacao_servico',emoji:'💅',title:'Apresentação do serviço'},
+    {key:'tratamento_objecoes',emoji:'🛡️',title:'Tratamento de objeções'},
+    {key:'fechamento',emoji:'🤝',title:'Fechamento'},
+    {key:'pix_pagamento',emoji:'💸',title:'Condução ao PIX'},
+  ];
+  document.getElementById('agente-script').innerHTML=sections
+    .filter(s=>r[s.key]&&r[s.key].length>0)
+    .map(s=>`
+      <div class="script-block">
+        <div class="script-block-title"><span>${s.emoji}</span><span>${s.title}</span></div>
+        ${r[s.key].map(i=>`<div class="script-item">${esc(i)}</div>`).join('')}
+      </div>
+    `).join('');
+
+  const frasesCard=document.getElementById('agente-frases-card');
+  const frasesBox=document.getElementById('agente-frases');
+  if(r.frases_chave&&r.frases_chave.length>0){
+    frasesBox.innerHTML=r.frases_chave.map(f=>`
+      <div class="frase-item" onclick='copyFrase(${JSON.stringify(f)})'>"${esc(f)}"</div>
+    `).join('');
+    frasesCard.style.display='block';
+  } else { frasesCard.style.display='none'; }
+
+  document.getElementById('agente-result').style.display='block';
+}
+
+function copyFrase(text){
+  navigator.clipboard.writeText(text).then(()=>{
+    const t=document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),1800);
+  });
+}
+
+// ══════════════════════════════════════════════════
+// TREINAR PAGE
+// ══════════════════════════════════════════════════
+async function renderTreinarSelect(){
+  await refreshServicos();
+  const sel=document.getElementById('treinar-servico');
+  sel.innerHTML='<option value="">— escolha o serviço desta conversa —</option>'+
+    servicos.map(s=>`<option value="${s.id}">${esc(s.nome)}</option>`).join('');
+  onTreinarChange();
+}
+
+function handleTreinarFile(e){
+  const file=e.target.files[0]; if(!file) return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    const existing=document.getElementById('treinar-texto').value;
+    const text=ev.target.result;
+    document.getElementById('treinar-texto').value=existing?existing+'\n\n---\n\n'+text:text;
+    onTreinarChange();
+  };
+  r.readAsText(file);
+  e.target.value='';
+}
+
+function onTreinarChange(){
+  const text=document.getElementById('treinar-texto').value.trim();
+  const serv=document.getElementById('treinar-servico').value;
+  const charDiv=document.getElementById('treinar-char');
+  if(text){
+    charDiv.style.display='block';
+    charDiv.textContent=text.length+' caracteres';
+  } else { charDiv.style.display='none'; }
+  document.getElementById('treinar-btn').disabled=!(text&&serv);
+  document.getElementById('treinar-error').style.display='none';
+  document.getElementById('treinar-success').style.display='none';
+}
+
+function clearTreinar(){
+  document.getElementById('treinar-texto').value='';
+  document.getElementById('treinar-servico').value='';
+  document.getElementById('treinar-error').style.display='none';
+  document.getElementById('treinar-success').style.display='none';
+  onTreinarChange();
+}
+
+async function treinar(){
+  const text=document.getElementById('treinar-texto').value.trim();
+  const servicoId=document.getElementById('treinar-servico').value;
+  if(!text||!servicoId) return;
+
+  document.getElementById('treinar-error').style.display='none';
+  document.getElementById('treinar-success').style.display='none';
+  document.getElementById('treinar-loading').style.display='block';
+  document.getElementById('treinar-btn').disabled=true;
+
+  const servicoNome = servicos.find(s=>String(s.id)===String(servicoId))?.nome || '';
+
+  try{
+    await apiPost('/api/treinar', { servicoId, conversa: text });
+    document.getElementById('treinar-success').textContent='✅ Treinamento concluído! O script de "'+servicoNome+'" foi atualizado.';
+    document.getElementById('treinar-success').style.display='block';
+    clearTreinar();
+  }catch(e){
+    showTreinarError(e.message || 'Erro ao conectar com o servidor.');
+  }
+
+  document.getElementById('treinar-loading').style.display='none';
+  document.getElementById('treinar-btn').disabled=false;
+}
+
+function showTreinarError(msg){
+  const b=document.getElementById('treinar-error');
+  b.textContent='⚠️ '+msg;
+  b.style.display='block';
+  document.getElementById('treinar-loading').style.display='none';
+  document.getElementById('treinar-btn').disabled=false;
+}
+
+// ══════════════════════════════════════════════════
+// HISTÓRICO PAGE
+// ══════════════════════════════════════════════════
+async function renderHistorico(){
+  await refreshServicos();
+  history = await apiGet('/api/historico');
+
+  const statsRow=document.getElementById('stats-row');
+  const servicosTreinados = new Set(history.map(h=>h.servico_id)).size;
+  statsRow.innerHTML=`
+    <div class="stat-box"><div class="stat-num">${history.length}</div><div class="stat-label">Conversas analisadas</div></div>
+    <div class="stat-box"><div class="stat-num">${servicosTreinados}</div><div class="stat-label">Serviços treinados</div></div>
+    <div class="stat-box"><div class="stat-num">${servicos.length}</div><div class="stat-label">Serviços cadastrados</div></div>
+  `;
+
+  const pills=document.getElementById('historico-pills');
+  const allServs=['Todos',...new Set(history.map(h=>h.servico_nome))];
+  if(!selectedHistorico) selectedHistorico='Todos';
+  pills.innerHTML=allServs.map(s=>`
+    <button class="pill ${selectedHistorico===s?'selected':''}" onclick="filterHistorico('${esc(s)}')">${esc(s)}</button>
+  `).join('');
+
+  const list=document.getElementById('historico-list');
+  const filtered=selectedHistorico==='Todos'?history:history.filter(h=>h.servico_nome===selectedHistorico);
+  if(filtered.length===0){
+    list.innerHTML=`<div class="card"><div class="empty"><div class="empty-icon">🗂️</div>Nenhuma conversa analisada ainda.<br/>Vá em <strong>🎓 Treinar</strong> para começar.</div></div>`;
+    return;
+  }
+  list.innerHTML=filtered.map((h,i)=>`
+    <div class="history-item" onclick="loadHistoricoItem(${i})">
+      <div class="history-meta">
+        <span class="tag tag-pink">${esc(h.servico_nome)}</span>
+        <span class="tag tag-green">Analisado</span>
+        <span class="history-date">${new Date(h.criado_em).toLocaleDateString('pt-BR')}</span>
+      </div>
+      <div class="history-preview">${esc(h.preview)}</div>
+      <div class="history-cta">Ver script →</div>
+    </div>
+  `).join('');
+}
+
+function filterHistorico(s){
+  selectedHistorico=s;
+  renderHistorico();
+}
+
+async function loadHistoricoItem(idx){
+  const filtered=selectedHistorico==='Todos'?history:history.filter(h=>h.servico_nome===selectedHistorico);
+  const item=filtered[idx];
+  selectedAgente=item.servico_id;
+  await goTo('agente');
+  await selectAgente(item.servico_id);
+}
+
+// ══════════════════════════════════════════════════
+// SERVIÇOS PAGE
+// ══════════════════════════════════════════════════
+async function renderServicos(){
+  await refreshServicos();
+  const list=document.getElementById('servicos-list');
+  if(servicos.length===0){
+    list.innerHTML=`<div class="empty"><div class="empty-icon">📋</div>Nenhum serviço cadastrado.</div>`;
+    return;
+  }
+  const results = await Promise.all(servicos.map(s=>apiGet('/api/scripts/'+s.id)));
+  list.innerHTML=servicos.map((s,i)=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(232,160,176,.2)">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:13.5px;font-weight:600;color:#2D1B22">${esc(s.nome)}</span>
+        ${results[i]?'<span class="tag tag-green">treinado</span>':'<span class="tag" style="background:#f5f5f5;color:#9B7080;border:1px solid #e0e0e0">sem script</span>'}
+      </div>
+      <button class="btn btn-danger" onclick="removeServico(${s.id})">Remover</button>
+    </div>
+  `).join('');
+}
+
+async function addServico(){
+  const input=document.getElementById('novo-servico');
+  const nome=input.value.trim();
+  const errBox=document.getElementById('servico-error');
+  errBox.style.display='none';
+  if(!nome){ errBox.textContent='⚠️ Digite o nome do serviço.'; errBox.style.display='block'; return; }
+  try{
+    await apiPost('/api/servicos', { nome });
+    input.value='';
+    await renderServicos();
+  }catch(e){
+    errBox.textContent='⚠️ '+(e.message||'Erro ao adicionar serviço.'); errBox.style.display='block';
+  }
+}
+
+async function removeServico(id){
+  const s = servicos.find(x=>x.id===id);
+  if(!confirm(`Remover "${s?.nome}"? O script treinado para este serviço também será apagado.`)) return;
+  await apiDelete('/api/servicos/'+id);
+  await renderServicos();
+}
+
+// ══════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════
+function esc(s){
+  if(!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ══════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════
+renderAgentePills();
+</script>
+</body>
+</html>
